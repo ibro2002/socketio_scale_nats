@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body class="b">
+    <input type="text" placeholder="port " value="3000" />
+    <button onclick="connect()">connect</button>
+    <input type="text" id="socketId" placeholder="socketId" value="" />
+    <input
+      type="text"
+      id="message"
+      placeholder="message to socketId"
+      value=""
+    />
+    <button onclick="send()">send</button>
+    <script src="/socket.io.min.js"></script>
+    <script>
+      let socket;
+      function send() {
+        const message = document.getElementById("message").value;
+        const socketId = document.getElementById("socketId").value;
+        socket.emit("message", { socketId, message });
+      }
+      function connect() {
+        const port = document.querySelector("input").value;
+        socket = io(`http://localhost:${port}`);
+        socket.on("connect", () => {
+          console.log("connected");
+          socket.emit("getList", "Hello Server");
+          socket.on("getListDone", (msg) => {
+            console.log(`getListDone :`, msg);
+          });
+          socket.on("message", (msg) => {
+            console.log(`message :`, msg);
+          });
+        });
+        socket.on("disconnect", () => {
+          console.log("disconnected");
+        });
+      }
+      // const socket = io("http://localhost:3001");
+      // socket.on("connect", () => {
+      //   console.log("connected");
+      //   socket.emit("getList", "Hello Server");
+      //   socket.on("getListDone", (msg) => {
+      //     console.log(`getListDone :`, msg);
+      //   });
+      // });
+      // socket.on("disconnect", () => {
+      //   console.log("disconnected");
+      // });
+    </script>
+  </body>
+</html>
